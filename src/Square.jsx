@@ -1,3 +1,5 @@
+import React from 'react';
+
 function Square({ val, onLClick, onRClick }) {
     return <div className="square" onClick={onLClick} onContextMenu={onRClick} >{val}</div>;
 }

@@ -1,8 +1,9 @@
 // import logo from './logo.svg';
+import React from 'react';
 import { useState } from 'react';
 import './App.css';
-import Grid from './Grid.js';
-import Game from './Game.js';
+import Grid from './Grid.jsx';
+import Game from './Game.jsx';
 
 function App() {
   return (

@@ -1,5 +1,5 @@
 {
-  "name": "test-to-do",
+  "name": "minesweeper-react",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -11,10 +11,10 @@
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "vite test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -34,5 +34,20 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "devDependencies": {
+    "vite": "^5.3.3"
+  },
+  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "main": "index.jsx",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sbilenkin/minesweeper"
+  },
+  "author": "Sadie Bilenkin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sbilenkin/minesweeper/issues"
+  },
+  "homepage": "https://github.com/sbilenkin/minesweeper#readme"
 }
