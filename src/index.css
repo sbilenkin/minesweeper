@@ -13,9 +13,11 @@ code {
 }
 
 .square {
-  color: black;
-  background: #fff;
-  border: 1px solid #999;
+  /* don't at me I'm doing wheat as a joke */
+  color: wheat;
+  background: rgb(50, 50, 50);
+  /* border: 1px solid #999; */
+  border: 1px solid wheat;
   float: left;
   font-size: 24px;
   font-weight: bold;
