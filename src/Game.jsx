@@ -13,29 +13,32 @@ function Game() {
 
     function handleLClick(row, col) {
         const newSquares = squares.map(x => x.slice());
-        if (mines[row][col]) {
-            newSquares[row][col] = mines[row][col];
-        }
-        else {
-            const visited = new Array(squares.length).fill(0).map(() => new Array(squares[0].length).fill(false));
-            clickEmpty(newSquares, row, col, visited);
-        }
+        const visited = new Array(squares.length).fill(0).map(() => new Array(squares[0].length).fill(false));
+        clickEmpty(newSquares, row, col, visited);
         setSquares(newSquares);
         console.log(squares);
     }
 
     function clickEmpty(board, row, col, visited) {
         if (row < 0 || row >= board.length || col < 0 || col >= board[0].length || visited[row][col] || board[row][col]) {
-            // if mines[row][col] is not 0 then set board and then return
             return;
         }
-        board[row][col] = mines[row][col];
+        if (mines[row][col] === 0) {
+            board[row][col] = " ";
+        }
+        else {
+            board[row][col] = mines[row][col];
+        }
         visited[row][col] = true;
         if (adjMines(row, col, mines) === 0) {
             clickEmpty(board, row - 1, col, visited); // Up
             clickEmpty(board, row + 1, col, visited); // Down
             clickEmpty(board, row, col - 1, visited); // Left
             clickEmpty(board, row, col + 1, visited); // Right
+            clickEmpty(board, row - 1, col - 1, visited); // Up-left
+            clickEmpty(board, row - 1, col + 1, visited); // Up-right
+            clickEmpty(board, row + 1, col - 1, visited); // Down-left
+            clickEmpty(board, row + 1, col + 1, visited); // Down-right
         }
     }
 
