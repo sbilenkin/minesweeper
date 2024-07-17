@@ -2,6 +2,7 @@ import React from 'react';
 import { useState } from "react";
 import { useEffect } from "react";
 import Grid from "./Grid";
+import PlayAgain from './PlayAgain';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import { byPrefixAndName } from '@fortawesome/fontawesome-svg-core';
 
@@ -10,19 +11,25 @@ function Game() {
     const [mines, setMines] = useState([null]);
     const [numMines, setNumMines] = useState(null);
     const [dims, setDims] = useState([null, null]);
+    const [numClicked, setNumClicked] = useState(0);
 
     function handleLClick(row, col) {
+        if (mines[row][col] === 'M') {
+            setNumMines(0);
+            setNumClicked(0);
+            return;
+        }
         const newSquares = squares.map(x => x.slice());
         const visited = new Array(squares.length).fill(0).map(() => new Array(squares[0].length).fill(false));
         clickEmpty(newSquares, row, col, visited);
         setSquares(newSquares);
-        console.log(squares);
     }
 
     function clickEmpty(board, row, col, visited) {
         if (row < 0 || row >= board.length || col < 0 || col >= board[0].length || visited[row][col] || board[row][col]) {
             return;
         }
+        setNumClicked(prevNumClicked => prevNumClicked + 1);
         if (mines[row][col] === 0) {
             board[row][col] = " ";
         }
@@ -50,10 +57,12 @@ function Game() {
             setSquares(newSquares);
             return;
         }
-        const newSquares = squares.map(x => x.slice());
-        // Should evenutally be a flag
-        newSquares[row][col] = 'X';
-        setSquares(newSquares);
+        else if (!squares[row][col]) {
+            const newSquares = squares.map(x => x.slice());
+            // Should evenutally be a flag
+            newSquares[row][col] = 'X';
+            setSquares(newSquares);
+        }
     }
 
     function difClick(val) {
@@ -115,7 +124,7 @@ function Game() {
     }
 
     useEffect(() => {
-        if (numMines) {
+        if (numMines && numMines > 0) {
             const newMines = mines.map(x => x.slice());
             for (const row in newMines) {
                 for (const col in newMines[row]) {
@@ -140,16 +149,27 @@ function Game() {
         return count;
     }
 
-    console.log("mines:", mines);
+    function playAgnClick() {
+        setSquares(null);
+        setNumMines(null);
+        setNumClicked(0);
+    }
+
+    console.log(numClicked);
 
     return (
         <>
-            {/* <FontAwesomeIcon icon={byPrefixAndName.fas['house']} /> */}
-            {!squares ? <ul>
+            {!squares? <ul>
                 <li onClick={() => difClick("easy")} >Yeehaw</li>
                 <li onClick={() => difClick("medium")} >Medium</li>
                 <li onClick={() => difClick("hard")} >Hard</li>
             </ul> :
+                numClicked === dims[0] * dims[1] - numMines ? 
+                <><h1>YOU WIN</h1>
+                <PlayAgain onClick={playAgnClick} /></> :
+                numMines === 0 ?
+                <><h1>YOU LOSE</h1>
+                <PlayAgain onClick={playAgnClick} /></> :
                 <Grid squares={squares} onLClick={handleLClick} onRClick={handleRClick} h={dims[0]} w={dims[1]} />}
         </>
     );
