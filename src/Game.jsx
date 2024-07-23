@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import Grid from "./Grid";
 import PlayAgain from './PlayAgain';
-import { click } from '@testing-library/user-event/dist/click';
+import '@fortawesome/fontawesome-free/css/all.css';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import { byPrefixAndName } from '@fortawesome/fontawesome-svg-core';
 
