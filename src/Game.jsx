@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import Grid from "./Grid";
 import PlayAgain from './PlayAgain';
+import { click } from '@testing-library/user-event/dist/click';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import { byPrefixAndName } from '@fortawesome/fontawesome-svg-core';
 
@@ -12,6 +13,8 @@ function Game() {
     const [numMines, setNumMines] = useState(null);
     const [dims, setDims] = useState([null, null]);
     const [numClicked, setNumClicked] = useState(0);
+    const [beenClicked, setBeenClicked] = useState(false);
+    const [boardSet, setBoardSet] = useState(false);
 
     function handleLClick(row, col) {
         if (mines[row][col] === 'M') {
@@ -70,57 +73,91 @@ function Game() {
             case "easy":
                 // 9x9 10 mines
                 setSquares(Array(9).fill(Array(9).fill(null)));
-                setMines(Array(9).fill(Array(9).fill(null)));
+                setMines(Array(9).fill(Array(9).fill(0)));
                 setDims([9, 9]);
                 break;
             case "medium":
                 // 16x16 40 mines
                 setSquares(Array(16).fill(Array(16).fill(null)));
-                setMines(Array(16).fill(Array(16).fill(null)));
+                setMines(Array(16).fill(Array(16).fill(0)));
                 setDims([16, 16]);
                 break;
             case "hard":
                 // 30x16 99 mines
                 setSquares(Array(16).fill(Array(30).fill(null)));
-                setMines(Array(16).fill(Array(30).fill(null)));
+                setMines(Array(16).fill(Array(30).fill(0)));
                 setDims([16, 30]);
                 break;
         }
     }
 
-    useEffect(() => {
-        if (!numMines && mines && squares && dims && mines.length > 0 && squares.length > 0 && dims.length > 0) {
+    function firstClick(row, col) {
+        if (!beenClicked) {
             switch (dims[1]) {
                 case 9:
-                    putMines(10);
+                    putMines(10, row, col, true); // true indicates to protect the first click area
                     break;
                 case 16:
-                    putMines(40);
+                    putMines(40, row, col, true);
                     break;
                 case 30:
-                    putMines(99);
+                    putMines(99, row, col, true);
                     break;
             }
+            setBeenClicked([row, col]);
         }
-    }, [mines, squares, dims]);
+        else {
+            handleLClick(row, col);
+        }
+    }
 
-    function putMines(num) {
+    useEffect(() => {
+        if(boardSet && beenClicked && numMines && numMines > 0) {
+            handleLClick(beenClicked[0], beenClicked[1]);
+        }
+    }, [boardSet]);
+
+    // useEffect(() => {
+    //     if (!numMines && mines && squares && dims && mines.length > 0 && squares.length > 0 && dims.length > 0) {
+    //         switch (dims[1]) {
+    //             case 9:
+    //                 putMines(10);
+    //                 break;
+    //             case 16:
+    //                 putMines(40);
+    //                 break;
+    //             case 30:
+    //                 putMines(99);
+    //                 break;
+    //         }
+    //     }
+    // }, [mines, squares, dims]);
+
+    function putMines(num, row, col) {
         const flatMines = mines.flat();
         const spots = [];
         while (spots.length < num) {
             const spot = Math.floor(Math.random() * flatMines.length);
-            if (!spots.includes(spot)) {
+            const row2 = Math.floor(spot / dims[1]);
+            const col2 = spot % dims[1];
+            if (!spots.includes(spot) && spot !== row * dims[1] + col && !isAdjacent(row, col, row2, col2)) {
                 spots.push(spot);
             }
         }
         const newMines = mines.map(x => x.slice());
         spots.forEach(spot => {
-            const row = Math.floor(spot / dims[1]);
-            const col = spot % dims[1];
-            newMines[row][col] = 'M';
+            const row3 = Math.floor(spot / dims[1]);
+            const col3 = spot % dims[1];
+            newMines[row3][col3] = 'M';
         });
         setMines(newMines);
         setNumMines(num);
+    }
+
+    function isAdjacent(row1, col1, row2, col2) {
+        const dx = Math.abs(row1 - row2);
+        const dy = Math.abs(col1 - col2);
+        return dx <= 1 && dy <= 1;
     }
 
     useEffect(() => {
@@ -134,6 +171,7 @@ function Game() {
                 }
             }
             setMines(newMines);
+            setBoardSet(true);
         }
     }, [numMines]);
 
@@ -153,24 +191,26 @@ function Game() {
         setSquares(null);
         setNumMines(null);
         setNumClicked(0);
+        setBeenClicked(false);
+        setBoardSet(false);
     }
 
-    console.log(numClicked);
+    console.log(mines);
 
     return (
         <>
-            {!squares? <ul>
+            {!squares ? <ul>
                 <li onClick={() => difClick("easy")} >Yeehaw</li>
                 <li onClick={() => difClick("medium")} >Medium</li>
                 <li onClick={() => difClick("hard")} >Hard</li>
             </ul> :
-                numClicked === dims[0] * dims[1] - numMines ? 
-                <><h1>YOU WIN</h1>
-                <PlayAgain onClick={playAgnClick} /></> :
-                numMines === 0 ?
-                <><h1>YOU LOSE</h1>
-                <PlayAgain onClick={playAgnClick} /></> :
-                <Grid squares={squares} onLClick={handleLClick} onRClick={handleRClick} h={dims[0]} w={dims[1]} />}
+                numClicked === dims[0] * dims[1] - numMines ?
+                    <><h1>YOU WIN</h1>
+                        <PlayAgain onClick={playAgnClick} /></> :
+                    numMines === 0 ?
+                        <><h1>YOU LOSE</h1>
+                            <PlayAgain onClick={playAgnClick} /></> :
+                        <Grid squares={squares} onLClick={firstClick} onRClick={handleRClick} h={dims[0]} w={dims[1]} />}
         </>
     );
 }
