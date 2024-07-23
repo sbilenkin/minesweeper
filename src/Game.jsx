@@ -117,22 +117,6 @@ function Game() {
         }
     }, [boardSet]);
 
-    // useEffect(() => {
-    //     if (!numMines && mines && squares && dims && mines.length > 0 && squares.length > 0 && dims.length > 0) {
-    //         switch (dims[1]) {
-    //             case 9:
-    //                 putMines(10);
-    //                 break;
-    //             case 16:
-    //                 putMines(40);
-    //                 break;
-    //             case 30:
-    //                 putMines(99);
-    //                 break;
-    //         }
-    //     }
-    // }, [mines, squares, dims]);
-
     function putMines(num, row, col) {
         const flatMines = mines.flat();
         const spots = [];
@@ -200,7 +184,7 @@ function Game() {
     return (
         <>
             {!squares ? <ul>
-                <li onClick={() => difClick("easy")} >Yeehaw</li>
+                <li onClick={() => difClick("easy")} >Easy</li>
                 <li onClick={() => difClick("medium")} >Medium</li>
                 <li onClick={() => difClick("hard")} >Hard</li>
             </ul> :
